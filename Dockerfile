@@ -1,22 +1,20 @@
-# Use a lightweight Python image
-FROM python:3.9-slim
+# Use the official Python image from the Docker Hub
+FROM python:3.12
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy your application files
-COPY . /app
-
-# Install dependencies and LibreOffice
-RUN apt-get update && \
-    apt-get install -y libreoffice && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install Python dependencies
+# Install LibreOffice
+RUN apt-get update && apt-get install -y libreoffice && apt-get clean
+# Copy the requirements and install dependencies
+COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port Streamlit will use
+# Copy the application code
+COPY . .
+
+# Expose the port that the app runs on
 EXPOSE 8501
 
-# Set the Streamlit command with the port from $PORT
-CMD streamlit run api.py --server.port=$PORT --server.address=0.0.0.0
+# Run the application with gunicorn
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "api:app"]

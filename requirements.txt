@@ -1,4 +1,3 @@
-streamlit
+Flask==3.0.0
+gunicorn==21.2.0
 python-docx
-comtypes; platform_system == "Windows"
-pythoncom; platform_system == "Windows"
